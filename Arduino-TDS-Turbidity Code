@@ -1,0 +1,51 @@
+// Define the analog pins connected to the sensors
+const int turbidityPin = A0;
+const int tdsPin = A1;
+
+// Calibration parameters for TDS sensor (replace with your values)
+const float kValue = 1.0; // K-value for your TDS sensor
+
+void setup() {
+  // Initialize serial communication
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Read the analog value from the turbidity sensor
+  int turbidityValue = analogRead(turbidityPin);
+  
+  // Read the analog value from the TDS sensor
+  int tdsValue = analogRead(tdsPin);
+
+  // Convert analog values to respective measurements
+  float turbidity = convertToTurbidity(turbidityValue);
+
+  float tdsPPM = convertToTDS(tdsValue);
+
+  // Print the sensor readings
+  //Serial.print("Turbidity (NTU): ");
+  Serial.print(turbidity);
+  Serial.print(",");
+
+  //Serial.print("TDS (ppm): ");
+  Serial.println(tdsPPM);
+
+  // Wait for a short delay
+  delay(50);
+}
+
+// Function to convert turbidity analog value to NTU
+float convertToTurbidity(int analogValue) {
+  // Convert the analog value to turbidity value using the linear calibration equation
+  float voltage = analogValue * (5.0 / 1024.0); // Convert analog value to voltage
+  float ntu = -111.25 * voltage + 506.67;
+  return ntu;
+}
+
+// Function to convert TDS analog value to TDS value in ppm
+float convertToTDS(int analogValue) {
+  // Convert the analog value to TDS value using the conversion formula
+  float voltage = analogValue * (5.0 / 1024.0); // Convert analog value to voltage
+  float tdsValue = (voltage / kValue) * 1000.0; // Convert voltage to TDS in ppm
+  return tdsValue;
+}
